@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "outDir": "./dist",
+    "target": "es6",
+    "declaration": true,
+    "noImplicitReturns": true,
+    "esModuleInterop": true,
+    "strict": true,
+    "experimentalDecorators": true
+  },
+  "include": ["./src/**/*"]
+}

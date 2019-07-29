@@ -1,0 +1,33 @@
+{
+  "name": "ts-utils",
+  "version": "1.0.0",
+  "description": "FE js-utils url date array",
+  "main": "dist/index.js",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/jest": "^24.0.15",
+    "jest": "23",
+    "ts-jest": "23",
+    "typedoc": "^0.14.2",
+    "typedoc-plugin-localization": "^1.4.1",
+    "typescript": "^3.5.3"
+  },
+  "scripts": {
+    "test": "jest",
+    "doc": "typedoc --out docs",
+    "ts": "tsc"
+  },
+  "jest": {
+    "rootDir": "tests",
+    "transform": {
+      "^.+\\.ts$": "ts-jest"
+    },
+    "testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.ts$",
+    "moduleFileExtensions": [
+      "ts",
+      "js",
+      "json",
+      "node"
+    ]
+  }
+}
