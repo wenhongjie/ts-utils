@@ -1,5 +1,5 @@
 {
-  "name": "ts-utils",
+  "name": "@wt/utils",
   "version": "1.0.0",
   "description": "FE js-utils url date array",
   "main": "dist/index.js",
