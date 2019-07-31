@@ -1,38 +1,139 @@
-import { getType } from '../common/common'
+import { getType, each, serialize } from '../common/common'
+import { Obj } from '../types/index'
 
-interface Configs {
+type Data = string | Document | Blob | ArrayBufferView | ArrayBuffer | FormData | URLSearchParams | ReadableStream<Uint8Array> | null | undefined
+
+interface Options {
   baseUrl?: string;
-  url: string;
-  method: string;
-  headers?: { [key: string]: string };
-  data?: any;
+  headers?: Record<string, string>;
   timeout?: number;
   responseType?: string;
 }
 
-new XMLHttpRequest().send()
+interface RequestOptions extends Options {
+  url: string;
+  method: string;
+  data?: Data;
+}
 
-type Data = string | Document | Blob | ArrayBufferView | ArrayBuffer | FormData | URLSearchParams | ReadableStream<Uint8Array> | null
+// 判断是否为简单请求
+const isSimpleReq = (method: string) => method === 'GET' || method === 'HEAD'
 
-class Req {
-  constructor() {
-    
+// 获取传入数据类型对应的值类型
+const getContentType = (dataType: string): string => {
+  const map: Record<string, string> = {
+    FormData: 'multipart/form-data;charset=utf-8',
+    Object: 'application/json;charset=utf-8',
+    String: 'text/plain;charset=utf-8'
+  }
+  return map[dataType]
+}
+
+// 获取请求头
+const getHeaders = (dataType: string, ...headerList: (Record<string, string> | undefined) []) => {
+  const ret: Record<string, string> = {
+    'Content-Type': getContentType(dataType) || 'application/x-www-form-urlencoded;charset=utf-8'
+  }
+  headerList.forEach(item => item && each(item, (val, key) => val && (ret[key] = val)))
+  return ret
+}
+
+// 数据转化
+const dataTransform = (data: Data, isSimpleReq: boolean, contentType: string ): any => {
+  // 简单请求
+  if (isSimpleReq) return null
+
+  // 数据类型
+  const type = getType(data)
+
+  const map: Record<string, () => any> = {
+    formData () {
+      return data
+    },
+
+    Object () {
+      return
+    }
   }
 
-  baseUrl = '';
 
-  timeout = 18000;
+}
+
+
+
+
+class Req {
+  constructor(options: Options = {}) {
+    this.baseUrl = options.baseUrl || ''
+    this.timeout = options.timeout || 18000
+    this.headers = options.headers || {}
+    this.responseType = options.responseType || 'json'
+  }
+
+  responseType: string;
+
+  baseUrl: string;
+
+  timeout: number;
+
+  headers: Record<string, string>;
 
   before (fn: Function) {
-
+    fn ()
   }
 
   after (callback: Function) {
 
   }
 
-  request(configs: Configs) {
+  request(options: RequestOptions) {
+    // 当前请求的数据类型
+    const dataType = getType(options.data)
 
+    // 请求方法
+    const method = options.method.toUpperCase()
+    // 公共url
+    const baseUrl = options.baseUrl || this.baseUrl
+
+    /**
+     * 请求地址
+     * 如果是一个简单请求则需将data转化为queryString字符转拼接到请求地址中
+     * 如果是一个复杂请求则需要根据content-type类型来转化追
+     */
+    const url = `${baseUrl}${options.url}${(isSimpleReq(method) && options.data instanceof Object ? '?' + serialize(options.data) : '')}`
+
+    // 请求数据
+    const data = options.data
+
+    // 请求头
+    const headers = getHeaders(dataType, this.headers, options.headers)
+
+    return new Promise((resolve, reject) => {
+      const xhr = new XMLHttpRequest()
+
+      // 初始化
+
+      xhr.open(method, url)
+
+      // 请求状态发生变化
+      xhr.onreadystatechange = function () {
+
+      }
+
+      // 请求超时
+      xhr.ontimeout = function () {
+
+      }
+
+      // 发送请求头
+      each(headers, (val, key) => {
+        xhr.setRequestHeader(key, val)
+      })
+
+      // 发送数据
+      xhr.send(data)
+
+    })
   }
 
   get (url: string, data?: Data) {
@@ -41,41 +142,37 @@ class Req {
     })
   }
 
-  post () {
-
+  post (url: string, data?: Data) {
+    return this.request({
+      url, method: 'post', data
+    })
   }
 
-  put () {
-
+  put (url: string, data?: Data) {
+    return this.request({
+      url, method: 'put', data
+    })
   }
 
-  patch () {
-
+  patch (url: string, data?: Data) {
+    return this.request({
+      url, method: 'patch', data
+    })
   }
 
-  delete () {
-
+  delete (url: string, data?: Data) {
+    return this.request({
+      url, method: 'delete', data
+    })
   }
 
 }
 
 
+const req = new Req()
 
 
 
-
-
-
-const xhr = new XMLHttpRequest()
-xhr.open('get', 'xxxx')
-
-xhr.onreadystatechange = function (e) {
-
-}
-
-xhr.setRequestHeader('xxx', 'xxx')
-
-xhr.send()
 
 export default {
   create () {

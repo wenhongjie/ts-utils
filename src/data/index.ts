@@ -251,14 +251,14 @@ class DWrap {
    * @returns {string} 返回一个字符串
    */
   serialize(separator: string = "&"): string {
-    let ret = ""
+    let ret = "?"
     const ctx: Obj = this.data
     each(ctx, (val, key) => {
       const value = val && typeof val === "object" ? JSON.stringify(val) : val
-      const g = `${encodeURIComponent(key)}=${encodeURIComponent(value) + separator}`
-      ret += g
+      const group = `${key}=${value}${separator}`
+      ret += group
     })
-    return ret.slice(0, -1)
+    return encodeURI(ret.slice(0, -1))
   }
 
   /**
@@ -337,21 +337,13 @@ class DWrap {
     }
   }
 
-  json(didParse: boolean = false, separator: string = '&'): Obj {
+  json(didParse = false, separator = '&'): Obj {
+    const ctx: string = decodeURI(this.data.replace(/^\?+/, ''))
     const ret: Obj = {}
-    const ctx = this.data
-    const str: string = ctx[0] === '?' ? ctx.slice(1) : ctx
-    if (str) {
-      const couple: string[] = str.split(separator)
-      each(couple, (v: string) => {
-        const arr = v.split('=')
-        const key = arr[0].trim()
-        const val = arr[1].trim()
-        const decodeVal = decodeURIComponent(val)
-
-        ret[key] = didParse ? this.parse(decodeVal) : decodeVal
-      })
-    }
+    ctx.split(separator).forEach(item => {
+      const [key, val] = item.split('=')
+      ret[key] = didParse ? this.parse(val) : val
+    })
     return ret
   }
 

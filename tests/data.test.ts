@@ -1,4 +1,4 @@
-import { wt } from '../src/data'
+import wt from '../src/data'
 
 const arr = [1, 2, 3, 4, 5]
 const obj = { name: 'Hodge', age: 23, height: 175 }
@@ -26,7 +26,7 @@ test('each map 遍历映射', () => {
 
 test('findIndex查找', () => {
   expect(
-    // wt(arr).findIndex(3) === 2 && wt(arr).findIndex(8) === -1 && 
+    // wt(arr).findIndex(3) === 2 && wt(arr).findIndex(8) === -1 &&
     wt(arr).findIndex(4, true) === 3
   ).toBeTruthy()
 })
