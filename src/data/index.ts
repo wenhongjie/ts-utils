@@ -251,7 +251,7 @@ class DWrap {
    * @returns {string} 返回一个字符串
    */
   serialize(separator: string = "&"): string {
-    let ret = "?"
+    let ret = ""
     const ctx: Obj = this.data
     each(ctx, (val, key) => {
       const value = val && typeof val === "object" ? JSON.stringify(val) : val
