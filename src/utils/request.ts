@@ -58,8 +58,7 @@ function dataTransform (data: Data, method: string, contentType: string ): any {
     }
   }
 
-  return map[type]
-
+  return map[type]()
 }
 
 
@@ -109,7 +108,7 @@ class Req {
     const url = `${baseUrl}${options.url}${(isSimpleReq(method) && options.data instanceof Object ? '?' + serialize(options.data) : '')}`
 
     // 请求数据
-    const data = dataTransform(options.data, isSimpleReq(method), headers['Content-Type'])
+    const data = dataTransform(options.data, method, headers['Content-Type'])
 
     return new Promise((resolve, reject) => {
       const xhr = new XMLHttpRequest()
@@ -171,14 +170,8 @@ class Req {
 
 }
 
-
-const req = new Req()
-
-
-
-
 export default {
-  create () {
-
+  create (options: Options) {
+    return new Req(options)
   }
 }
