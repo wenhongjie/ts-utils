@@ -17,10 +17,12 @@ interface RequestOptions extends Options {
 }
 
 // 判断是否为简单请求
-const isSimpleReq = (method: string) => method === 'GET' || method === 'HEAD'
+function isSimpleReq (method: string) {
+  return method === 'GET' || method === 'HEAD'
+} 
 
 // 获取传入数据类型对应的值类型
-const getContentType = (dataType: string): string => {
+function getContentType (dataType: string): string {
   const map: Record<string, string> = {
     FormData: 'multipart/form-data;charset=utf-8',
     Object: 'application/json;charset=utf-8',
@@ -30,7 +32,7 @@ const getContentType = (dataType: string): string => {
 }
 
 // 获取请求头
-const getHeaders = (dataType: string, ...headerList: (Record<string, string> | undefined) []) => {
+function getHeaders (dataType: string, ...headerList: (Record<string, string> | undefined) []) {
   const ret: Record<string, string> = {
     'Content-Type': getContentType(dataType) || 'application/x-www-form-urlencoded;charset=utf-8'
   }
@@ -39,9 +41,9 @@ const getHeaders = (dataType: string, ...headerList: (Record<string, string> | u
 }
 
 // 数据转化
-const dataTransform = (data: Data, isSimpleReq: boolean, contentType: string ): any => {
+function dataTransform (data: Data, method: string, contentType: string ): any {
   // 简单请求
-  if (isSimpleReq) return null
+  if (isSimpleReq(method)) return null
 
   // 数据类型
   const type = getType(data)
@@ -56,6 +58,7 @@ const dataTransform = (data: Data, isSimpleReq: boolean, contentType: string ): 
     }
   }
 
+  return map[type]
 
 }
 
@@ -92,21 +95,21 @@ class Req {
 
     // 请求方法
     const method = options.method.toUpperCase()
+
     // 公共url
     const baseUrl = options.baseUrl || this.baseUrl
+
+    // 请求头
+    const headers = getHeaders(dataType, this.headers, options.headers)
 
     /**
      * 请求地址
      * 如果是一个简单请求则需将data转化为queryString字符转拼接到请求地址中
-     * 如果是一个复杂请求则需要根据content-type类型来转化追
      */
     const url = `${baseUrl}${options.url}${(isSimpleReq(method) && options.data instanceof Object ? '?' + serialize(options.data) : '')}`
 
     // 请求数据
-    const data = options.data
-
-    // 请求头
-    const headers = getHeaders(dataType, this.headers, options.headers)
+    const data = dataTransform(options.data, isSimpleReq(method), headers['Content-Type'])
 
     return new Promise((resolve, reject) => {
       const xhr = new XMLHttpRequest()
