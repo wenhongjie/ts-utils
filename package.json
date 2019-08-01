@@ -13,8 +13,6 @@
     "jest": "23",
     "ts-jest": "23",
     "ts-loader": "^6.0.4",
-    "typedoc": "^0.14.2",
-    "typedoc-plugin-localization": "^1.4.1",
     "typescript": "^3.5.3",
     "webpack": "^4.38.0",
     "webpack-cli": "^3.3.6",
