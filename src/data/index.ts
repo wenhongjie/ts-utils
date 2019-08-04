@@ -190,7 +190,7 @@ class DWrap {
     return ctx
   }
 
-  merge(mergeOrigin: Obj[] | Obj, keys?: string[], type: string = 'without'): void {
+  merge(mergeOrigin: Obj[] | Obj, keys?: string[], type: 'without' | 'within' = 'without'): void {
     type Fn = (ctx: Obj, obj: Obj) => void
     const ctx: Obj = this.data
     const mergeOriginType: string = getType(mergeOrigin)
