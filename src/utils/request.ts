@@ -1,5 +1,4 @@
 import { getType, each, serialize } from '../common/common'
-import { Obj } from '../types/index'
 
 type Data = string | Document | Blob | ArrayBufferView | ArrayBuffer | FormData | URLSearchParams | ReadableStream<Uint8Array> | null | undefined
 
@@ -19,7 +18,7 @@ interface RequestOptions extends Options {
 // 判断是否为简单请求
 function isSimpleReq (method: string) {
   return method === 'GET' || method === 'HEAD'
-} 
+}
 
 // 获取传入数据类型对应的值类型
 function getContentType (dataType: string): string {
@@ -60,9 +59,6 @@ function dataTransform (data: Data, method: string, contentType: string ): any {
 
   return map[type]()
 }
-
-
-
 
 class Req {
   constructor(options: Options = {}) {
