@@ -1,4 +1,5 @@
 import { getType, each } from '../common/common';
+Date.prototype.format = (fmt) => fmt;
 class DWrap {
     constructor(data) {
         this.data = data;
@@ -200,10 +201,10 @@ class DWrap {
         const ctx = this.data;
         each(ctx, (val, key) => {
             const value = val && typeof val === "object" ? JSON.stringify(val) : val;
-            const g = `${encodeURIComponent(key)}=${encodeURIComponent(value) + separator}`;
-            ret += g;
+            const group = `${key}=${value}${separator}`;
+            ret += group;
         });
-        return ret.slice(0, -1);
+        return encodeURI(ret.slice(0, -1));
     }
     /**
     * 重置对象的值为0值
@@ -275,19 +276,12 @@ class DWrap {
         }
     }
     json(didParse = false, separator = '&') {
+        const ctx = decodeURI(this.data.replace(/^\?+/, ''));
         const ret = {};
-        const ctx = this.data;
-        const str = ctx[0] === '?' ? ctx.slice(1) : ctx;
-        if (str) {
-            const couple = str.split(separator);
-            each(couple, (v) => {
-                const arr = v.split('=');
-                const key = arr[0].trim();
-                const val = arr[1].trim();
-                const decodeVal = decodeURIComponent(val);
-                ret[key] = didParse ? this.parse(decodeVal) : decodeVal;
-            });
-        }
+        ctx.split(separator).forEach(item => {
+            const [key, val] = item.split('=');
+            ret[key] = didParse ? this.parse(val) : val;
+        });
         return ret;
     }
     repeat(num, joiner = '') {

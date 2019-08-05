@@ -1,4 +1,9 @@
 import { Obj, Arr, ExcludeObj } from '../types/index';
+declare global {
+    interface Date {
+        format(fmt: string): string;
+    }
+}
 declare class DWrap {
     readonly data: any;
     type: string;
@@ -48,7 +53,7 @@ declare class DWrap {
     map(fn: (value: any, key: string, ctx: Obj) => any): Obj;
     deepCopy(): Obj | Arr;
     copy(): any;
-    merge(mergeOrigin: Obj[] | Obj, keys?: string[], type?: string): void;
+    merge(mergeOrigin: Obj[] | Obj, keys?: string[], type?: 'without' | 'within'): void;
     /**
      * 序列化一个js对象
      * @param separator 序列化的连接符 默认值 '&
